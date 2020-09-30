@@ -11,8 +11,11 @@ const server = http.createServer(app); // use app to handle server requests
 
 // homepage route
 app.get('/', (req, res) => {
+  // get name from query parameters
+  // (default to 'World' if no 'name' query param exists)
+  const name = req.query.name || 'World';
   // sends back html h1 tag
-  res.send('<h1>Hello World</h1>')
+  res.send(`<h1>Hello, ${name}</h1>`)
 })
 
 // about page
@@ -37,6 +40,13 @@ app.get('/friends', (req, res) => {
     ${friends}
   </ul>
   `)
+})
+
+app.get('/year', (req, res) => {
+  const { age } = req.query;
+  const year = 2020;
+  const calcAge = year - parseInt(age, 10);
+  res.send(`You were born in ${calcAge}`);
 })
 
 // friend detail page (uses route parameters indicated by :handle )
