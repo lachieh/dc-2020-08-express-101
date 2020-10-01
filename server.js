@@ -1,6 +1,7 @@
 const http = require('http'); // core http module
 const express = require('express'); // 3rd party express module
 const data = require('./data'); // local data module
+const radLogger = require('./middleware/radlogger');
 
 const hostname = '127.0.0.1'; // localhost (our computer)
 const port = 3000; // port to run server on
@@ -8,6 +9,23 @@ const port = 3000; // port to run server on
 const app = express(); // creating express app
 
 const server = http.createServer(app); // use app to handle server requests
+
+// use our logging middleware on all routes
+app.use(radLogger);
+
+// must have ?awesome=true on url to access /friends routes
+app.use('/friends*',(req, res, next) => {
+  // if the the query 'awesome' exists
+  if (req.query.awesome) {
+    // log it and move on to the next request
+    console.log('AWESOME REQUEST!')
+    next()
+  } else {
+    // otherwise, tell express there is an error
+    // by passing something to the 'next' function
+    next('REQUEST NOT AWESOME');
+  }
+})
 
 // homepage route
 app.get('/', (req, res) => {
@@ -17,7 +35,6 @@ app.get('/', (req, res) => {
   // sends back html h1 tag
   res.send(`<h1>Hello, ${name}</h1>`)
 })
-
 // about page
 app.get('/about', (req, res) => {
   // send back h1 for about page
