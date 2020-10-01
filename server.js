@@ -1,5 +1,6 @@
 const http = require('http'); // core http module
 const express = require('express'); // 3rd party express module
+const bodyParser = require('body-parser') // 3rd party body-parser module
 const data = require('./data'); // local data module
 const radLogger = require('./middleware/radlogger');
 
@@ -9,6 +10,15 @@ const port = 3000; // port to run server on
 const app = express(); // creating express app
 
 const server = http.createServer(app); // use app to handle server requests
+
+// look for static files in 'public' folder first
+app.use(express.static('public'))
+
+// parse json body into an object
+app.use(bodyParser.json());
+
+// parse url encoded body into an object
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // use our logging middleware on all routes
 app.use(radLogger);
@@ -35,6 +45,7 @@ app.get('/', (req, res) => {
   // sends back html h1 tag
   res.send(`<h1>Hello, ${name}</h1>`)
 })
+
 // about page
 app.get('/about', (req, res) => {
   // send back h1 for about page
