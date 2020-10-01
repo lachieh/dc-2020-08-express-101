@@ -23,19 +23,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // use our logging middleware on all routes
 app.use(radLogger);
 
-// must have ?awesome=true on url to access /friends routes
-app.use('/friends*',(req, res, next) => {
-  // if the the query 'awesome' exists
-  if (req.query.awesome) {
-    // log it and move on to the next request
-    console.log('AWESOME REQUEST!')
-    next()
-  } else {
-    // otherwise, tell express there is an error
-    // by passing something to the 'next' function
-    next('REQUEST NOT AWESOME');
-  }
-})
+// // must have ?awesome=true on url to access /friends routes
+// app.use('/friends*',(req, res, next) => {
+//   // if the the query 'awesome' exists
+//   if (req.query.awesome) {
+//     // log it and move on to the next request
+//     console.log('AWESOME REQUEST!')
+//     next()
+//   } else {
+//     // otherwise, tell express there is an error
+//     // by passing something to the 'next' function
+//     next('REQUEST NOT AWESOME');
+//   }
+// })
 
 // homepage route
 app.get('/', (req, res) => {
@@ -104,6 +104,86 @@ app.get('/friends/:handle', (req, res) => {
       <h3>${friend.handle}</h3>
       <p>${friend.skill}</p>
     `)
+  }
+})
+
+app.get('/api/friends', (req, res) => {
+  res.json(data);
+})
+
+app.get('/api/friends/:handle', (req, res) => {
+  const { handle } = req.params;
+
+  const friend = data.find(element => {
+    if (element.handle === handle) {
+      return true;
+    }
+    return false;
+  })
+
+  if (!friend) {
+    res.status(404).json()
+  } else {
+    res.json(friend);
+  }
+})
+
+app.post('/api/friends', (req, res) => {
+  console.log(req);
+  if (!req.body.name || !req.body.handle || !req.body.skill) {
+    res.status(422).json()
+  }
+  const newFriend = {
+    name: req.body.name,
+    handle: req.body.handle,
+    skill: req.body.skill,
+  }
+  data.push(newFriend)
+  res.status(201).json()
+})
+
+app.delete('/api/friends/:handle', (req, res) => {
+  const { handle } = req.params;
+
+  const friendIndex = data.findIndex(element => {
+    if (element.handle === handle) {
+      return true;
+    }
+    return false;
+  })
+
+  if (friendIndex === -1) {
+    res.status(404).json();
+  } else {
+    data.splice(friendIndex, 1);
+    res.status(204).json()
+  }
+})
+
+app.put('/api/friends/:handle', (req, res) => {
+  const { handle } = req.params;
+
+  const friendIndex = data.findIndex(element => {
+    if (element.handle === handle) {
+      return true;
+    }
+    return false;
+  })
+
+  if (!req.body.name || !req.body.handle || !req.body.skill) {
+    res.status(422).json()
+  }
+  const newFriend = {
+    name: req.body.name,
+    handle: req.body.handle,
+    skill: req.body.skill,
+  }
+
+  if (friendIndex === -1) {
+    res.status(404).json();
+  } else {
+    data.splice(friendIndex, 1, newFriend);
+    res.status(202).json()
   }
 })
 
