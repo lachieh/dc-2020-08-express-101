@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Friends</h1>
+  <ul id="friends">
+  </ul>
+
+  <form action="/api/friends" method="post" id="friendForm">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" required>
+    </div>
+    <div>
+      <label for="handle">Handle</label>
+      <input type="text" name="handle" id="handle" required>
+    </div>
+    <div>
+      <label for="skill">Skill</label>
+      <input type="text" name="skill" id="skill" required>
+    </div>
+    <input type="submit">
+  </form>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
