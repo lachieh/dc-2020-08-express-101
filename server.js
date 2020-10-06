@@ -3,13 +3,17 @@ const express = require('express'); // 3rd party express module
 const bodyParser = require('body-parser') // 3rd party body-parser module
 const data = require('./data'); // local data module
 const radLogger = require('./middleware/radlogger');
+const es6Renderer = require('express-es6-template-engine');
 
 const hostname = '127.0.0.1'; // localhost (our computer)
 const port = 3000; // port to run server on
 
 const app = express(); // creating express app
-
 const server = http.createServer(app); // use app to handle server requests
+
+app.engine('html', es6Renderer); // use es6renderer for html view templates
+app.set('views', 'templates'); // look in the 'templates' folder for view templates
+app.set('view engine', 'html'); // set the view engine to use the 'html' views
 
 // look for static files in 'public' folder first
 app.use(express.static('public'))
@@ -42,8 +46,17 @@ app.get('/', (req, res) => {
   // get name from query parameters
   // (default to 'World' if no 'name' query param exists)
   const name = req.query.name || 'World';
-  // sends back html h1 tag
-  res.send(`<h1>Hello, ${name}</h1>`)
+  
+  // use the 'render' method to invoke the view engine
+  res.render('home', { // use the templates/home.html file
+    locals: { // 'locals' is all the local variables available to the template
+      name: name, // assign the 'name' variable as 'name' in the template
+      title: 'Home' // assign the string 'Home' as the 'title'
+    },
+    partials: {
+      head: 'partials/head' // tell the engine about the 'head' partial
+    }
+  });
 })
 
 // about page
@@ -68,6 +81,19 @@ app.get('/friends', (req, res) => {
     ${friends}
   </ul>
   `)
+})
+
+// GET request to the /friendsStatic route
+app.get('/friendsStatic', (req, res) => {
+  res.render('friends', { // use the templates/friends.html file
+    locals: {
+      friends: data, // make the 'data' variable available to the template as 'friends'
+      title: 'Friends' // pass the 'Friends' string as 'title'
+    },
+    partials: {
+      head: 'partials/head'
+    }
+  })
 })
 
 app.get('/year', (req, res) => {
